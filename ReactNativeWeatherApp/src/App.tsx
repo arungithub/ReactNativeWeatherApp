@@ -1,7 +1,10 @@
 import React from 'react';
+import Navigator from './navigator/navigator';
 
-///ToDo: implement Navigator with root view and add the store reference globally here...
 const App = () => {
+  return (
+    <Navigator />
+  );
 };
 
 export default App;
