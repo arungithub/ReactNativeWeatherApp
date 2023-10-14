@@ -1,4 +1,4 @@
-import { View, Text, ViewStyle } from 'react-native';
+import { View, Text } from 'react-native';
 import React from 'react';
 import { TopBarProps } from './types';
 import { useNavigation } from '@react-navigation/native';
