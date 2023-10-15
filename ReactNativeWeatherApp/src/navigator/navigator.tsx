@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Home from '../screens/home/home';
 import Forecast from '../screens/forecast/forecast'
+import { GeolocationResponse } from '@react-native-community/geolocation';
 
 const Stack = createStackNavigator();
 
