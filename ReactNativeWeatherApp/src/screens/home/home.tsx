@@ -1,55 +1,126 @@
-import { View, Text, TextInput, TouchableOpacity, Image, FlatList } from 'react-native';
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { appLoaded } from '../../core/redux/actions/appActions';
-import { HomeStyle } from './styles';
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { RootState } from '../../core/redux/store';
+import { useNavigation } from '@react-navigation/native';
+import { GetCityResponse, WeatherResponse } from '../../types/types';
+import { AppConstants } from '../../constants/constants';
+import { weatherActions } from '../../core/redux/reducers/appReducer';
+import { appLoaded, getCity, getCurrentWeatherInfo, getSelectedLocationWeatherForecast, getSelectedLocationWeatherInfo } from '../../core/redux/actions/appActions';
+import Utils from '../../utils/utils';
 import CarouselTile from '../../components/carouselTile/carouselTile';
-
-interface City {
-    name: string;
-    image: number;
-}
+import { HomeStyle } from './styles';
+import Styles from '../../styles/styles';
 
 const Home = () => {
-  const dispatch = useDispatch();
+  const navigation = useNavigation<any>();
+  const dispatch = useAppDispatch();
 
-  const cities: City[] = [
-    {
-      name: 'Norwich',
-      image: require('../../assets/images/tile.png'),
-    },
-    {
-      name: 'London',
-      image: require('../../assets/images/tile.png'),
-    },
-    {
-      name: 'New York',
-      image: require('../../assets/images/tile.png'),
-    },
-    {
-      name: 'San Francisco',
-      image: require('../../assets/images/tile.png'),
-    },
-    {
-      name: 'New Jersey',
-      image: require('../../assets/images/tile.png'),
-    },
-  ];
-  
+  const [city, setCity] = useState(''); //to hold search bar input   
+  const [validInput, setValidInput] = useState(true);
+
+  const getWeather = (state: RootState) => state.weather;
+  const getAppState = (state: RootState) => state.App;
+
+  const { currentWeatherInformation, selectedLocationWeather } = useAppSelector(getWeather);
+  const { currentGeoLocation, selectedLocation } = useAppSelector(getAppState);
+
+  const { searchCities, loading } = useAppSelector(getWeather);
+  const { favouriteLocations } = useAppSelector(getAppState);
+
   useEffect(() => {
     dispatch(appLoaded());
-  });
+    if (currentGeoLocation) {
+      dispatch(
+        getCurrentWeatherInfo({
+          lat: currentGeoLocation?.coords.latitude,
+          lon: currentGeoLocation?.coords.longitude,
+          units: AppConstants.Celsius.value,
+        }),
+      );
+    }
+  }, [currentGeoLocation, dispatch, selectedLocation]);
+
+  //on search icon tap event
+  const searchCity = () => {
+    if (city !== '' && city !== null && city !== undefined) {
+      setValidInput(true);
+      dispatch(getCity({ q: city }));
+    } else {
+      setValidInput(false);
+    }
+    setCity('') // clearing search bar post search 
+  };
+
+  //for forecast
+  const fetchAndNavigateToForecastScreen = (city: GetCityResponse, isCurrentLocation: boolean) => {
+    dispatch(updateSelectedCity(isCurrentLocation ? null : city));
+
+    dispatch(
+      getSelectedLocationWeatherInfo({
+        lat: city.lat,
+        lon: city.lon,
+        units: AppConstants.Celsius.value,
+      }),
+    );
+
+    dispatch(
+      getSelectedLocationWeatherForecast({
+        lat: city.lat,
+        lon: city.lon,
+        units: AppConstants.Celsius.value,
+        cnt: 5,
+      }),
+    );
+
+    dispatch(weatherActions.clearSearchCity());
+    navigation.navigate('Forecast');
+  };
+
+  // Render user's current location details 
+  const renderCurrentLocWeatherDetails = (weatherInfo: WeatherResponse) => {
+    const currentCity: GetCityResponse = {
+      name: currentWeatherInformation?.name as string,
+      lat: currentWeatherInformation?.coord.lat as number,
+      lon: currentWeatherInformation?.coord.lon as number,
+      country: currentWeatherInformation?.sys.country as string,
+      state: ""
+    };
+    //{[Styles.container, ForecastStyle.cardStyle, Styles.forecastFlatListBackgroundColor]}
+    return (
+      <View>
+        <Text style={{ color: 'white', fontSize: 22, fontWeight: 'bold', paddingBottom: 5 }}>
+          Current location weather details
+        </Text>
+        <TouchableOpacity style={HomeStyle.currentLocationTile} onPress={() => fetchAndNavigateToForecastScreen(currentCity, true)}>
+          <Text style={{ color: 'white', fontSize: 30, textAlign: "center" }}>{weatherInfo?.name}</Text>
+          <Text style={{ fontSize: 30, color: 'white', textAlign: "center" }}>{Utils.getRoundOfTemp(weatherInfo?.main.temp)}</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
 
   return (
-    <View style={{flex: 1}}>
-      <View style={{flex: 1, backgroundColor:"red",  paddingVertical: 20, paddingHorizontal: 20}}>
+    <View style={Styles.flex1}>
+      <View style={[Styles.flex1, Styles.appBackgroundThemeColor, Styles.padding_v_h_20]}>
         <View style={{ flex: 1, paddingBottom: 20, paddingTop: 5 }}>
+          {currentWeatherInformation ? (
+            renderCurrentLocWeatherDetails(currentWeatherInformation)
+          ) : (
             <View>
-              <Text style={{ fontSize: 16, color: 'lightgray', paddingHorizontal: 20, paddingVertical: 30 }}>Current location weather details tile here.</Text>
+              <Text style={{ fontSize: 16, color: 'lightgray', paddingHorizontal: 20, paddingVertical: 30 }}>Please enable location access to view your current location weather details tile here.</Text>
             </View>
+          )}
         </View>
 
-        <View style={{flex: 3}}>
+        <View style={Styles.flex3}>
           <Text style={{ color: 'white', fontSize: 22, fontWeight: 'bold' }}>
             Search city by name
           </Text>
@@ -65,11 +136,13 @@ const Home = () => {
               paddingHorizontal: 10,
             }}>
             <TextInput
+              value={city}
+              onChangeText={val => setCity(val)}
               placeholder="Search City"
               placeholderTextColor={'lightgray'}
               style={{ paddingHorizontal: 10, color: 'white', fontSize: 22 }}
             />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => searchCity()}>
               <Image
                 source={require('../../assets/images/search.png')}
                 style={HomeStyle.searchIcon}
@@ -77,24 +150,46 @@ const Home = () => {
             </TouchableOpacity>
           </View>
           <View style={{ paddingTop: 10, paddingBottom: 10 }}>
-          <Image
-            style={{width: 300, height: 200}}
-            source={require('../../assets/images/tile.png')}/>
+            {loading ? (
+              <Text style={{ fontSize: 26, color: 'white' }}> Loading... </Text>
+            ) : (
+              <View />
+            )}
+            {searchCities && searchCities.length > 0 ? (
+              <FlatList
+                horizontal={false}
+                data={searchCities}
+                renderItem={({ item }) => (
+                  <CarouselTile title={item.name} country={item.country} onCarouselTilePress={() => fetchAndNavigateToForecastScreen(item, false)} />
+                )}
+              />
+            ) : (
+              <View>
+                <Text style={{ fontSize: 16, color: 'yellow' }}>Please enter a valid city name in the search bar & search, to view the tappable city tile here.</Text>
+              </View>
+            )}
           </View>
         </View>
 
-        <View style={{flex: 2}}>
+        <View style={Styles.flex2}>
           <Text style={{ color: 'white', fontSize: 25, paddingHorizontal: 10, fontWeight: 'bold' }}>
             Favourites
           </Text>
 
-          <FlatList
-              horizontal
-                data={cities}
-                renderItem={({item}: {item: any}) => (
-                  <CarouselTile title={item.name} country="" onCarouselTilePress={() => {{}}} />
-                )}
-              />
+          {favouriteLocations.length > 0 ? (
+            <FlatList
+              style={{ paddingTop: 10, paddingBottom: 10 }}
+              horizontal={true}
+              data={favouriteLocations}
+              renderItem={({ item }) => (
+                <CarouselTile title={item.name} country="" onCarouselTilePress={() => fetchAndNavigateToForecastScreen(item, false)} />
+              )}
+            />
+          ) : (
+            <View>
+              <Text style={{ fontSize: 16, color: 'lightgray', paddingHorizontal: 20, paddingVertical: 30 }}>No Favourite cities to show. You can add city of your choice to favouries in the details screen.</Text>
+            </View>
+          )}
         </View>
 
       </View>

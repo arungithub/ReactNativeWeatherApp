@@ -8,8 +8,9 @@ import {
 
 export const EndPoints: AppEndPointsType = {
   currentWeather: '/data/2.5/weather',
-  dailyForecast: '/data/2.5/forecast',
+  dailyForecast: '/data/2.5/forecast/daily',
   getGeoCode: '/geo/1.0/direct',
+  getIcon: 'img/wn',
 };
 
 const encodeQueryParams = (data: ReqDataType) => {
@@ -19,7 +20,6 @@ const encodeQueryParams = (data: ReqDataType) => {
   }
   return ret.join('&');
 };
-
 export const getRequestObject = (
   url: string,
   data: ParamDataType,

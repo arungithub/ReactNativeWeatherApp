@@ -1,6 +1,7 @@
-import AppReducer from './reducers/appReducer';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import AppReducer, { weatherReducer } from './reducers/appReducer';
 import {
+  persistStore,
   persistReducer,
   FLUSH,
   PERSIST,
@@ -8,9 +9,8 @@ import {
   PURGE,
   PAUSE,
   REHYDRATE,
-  persistStore,
 } from 'redux-persist';
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const persistConfig = {
   key: 'root',
@@ -19,6 +19,7 @@ const persistConfig = {
 
 export const rootReducer = combineReducers({
   App: AppReducer,
+  weather: weatherReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
