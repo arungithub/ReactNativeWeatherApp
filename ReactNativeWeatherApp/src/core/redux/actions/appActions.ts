@@ -1,15 +1,15 @@
 import { EndPoints, getRequestObject } from '../../network/apiHelper';
 import { makeApiRequest } from '../../network/apiClient';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import {
-  GetCityDetailsReq,
-  GetCurrentWeatherReq,
-  GetWeatherForecastReq,
-  ThunkType,
-} from '../types';
 import { GeolocationResponse } from '@react-native-community/geolocation';
 import { AppConstants } from '../../../constants/constants';
 import { APIResponse, GetCityResponse } from '../../../types/types';
+import {
+  GetCityDetailsRequest,
+  GetCurrentWeatherRequest,
+  GetWeatherForecastRequest,
+  ThunkType,
+} from '../types';
 
 const createAppAsyncThunk = createAsyncThunk.withTypes<ThunkType>();
 
@@ -19,6 +19,8 @@ export const actionTypes = {
     'WEATHER/GET_CURRENT_LOCATION_WEATHER_INFO',
   GET_SELECTED_LOCATION_WEATHER_INFO:
     'WEATHER/GET_SELECTED_LOCATION_WEATHER_INFO',
+  GET_CURRENT_LOCATION_WEATHER_FORECAST:
+    'WEATHER/GET_CURRENT_LOCATION_WEATHER_FORECAST',
   GET_SELECTED_LOCATION_WEATHER_FORECAST:
     'WEATHER/GET_SELECTED_LOCATION_WEATHER_FORECAST',
   UPDATE_CURRENT_GEO_LOCATION: 'APP/UPDATE_CURRENT_GEO_LOCATION',
@@ -48,7 +50,7 @@ export const updateCurrentLocation = (position: GeolocationResponse) => {
 };
 
 const fetchWeatherDetails = async (
-  data: GetCurrentWeatherReq,
+  data: GetCurrentWeatherRequest,
   { rejectWithValue }: any,
 ) => {
   try {
@@ -77,7 +79,7 @@ export const getSelectedLocationWeatherInfo = createAppAsyncThunk(
 
 export const getCity = createAppAsyncThunk(
   actionTypes.GET_CITY_DETAILS,
-  async (data: GetCityDetailsReq, { rejectWithValue }) => {
+  async (data: GetCityDetailsRequest, { rejectWithValue }) => {
     try {
       const req = getRequestObject(EndPoints.getGeoCode, data);
       const response = (await makeApiRequest(req)) as GetCityResponse[];
@@ -94,7 +96,7 @@ export const getCity = createAppAsyncThunk(
 );
 
 const fetchWeatherForecast = async (
-  data: GetWeatherForecastReq,
+  data: GetWeatherForecastRequest,
   { rejectWithValue }: any,
 ) => {
   try {
@@ -110,6 +112,11 @@ const fetchWeatherForecast = async (
     rejectWithValue(e);
   }
 };
+
+export const getCurrentWeatherForecast = createAppAsyncThunk(
+  actionTypes.GET_CURRENT_LOCATION_WEATHER_FORECAST,
+  fetchWeatherForecast,
+);
 
 export const getSelectedLocationWeatherForecast = createAppAsyncThunk(
   actionTypes.GET_SELECTED_LOCATION_WEATHER_FORECAST,

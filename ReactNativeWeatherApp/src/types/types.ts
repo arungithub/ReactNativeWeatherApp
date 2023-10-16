@@ -5,6 +5,14 @@ export interface Weather {
   icon: string;
 }
 
+export interface WeatherDetail {
+  temp: string;
+  feels_like: string;
+  temp_min: string;
+  temp_max: string;
+  humidity: number;
+}
+
 export interface WeatherSysDetails {
   country: string;
 }
@@ -17,6 +25,20 @@ export interface WeatherCoordinates {
 export interface APIResponse {
   cod: number | string;
   [key: string]: any;
+}
+
+export interface WeatherResponse extends APIResponse {
+  weather: Weather[];
+  main: WeatherDetail;
+  name: string;
+  dt: number;
+  coord: WeatherCoordinates;
+  sys: WeatherSysDetails;
+}
+
+export interface ForecastResponse extends APIResponse {
+  list: WeatherResponse[];
+  cnt: number;
 }
 
 export interface GetCityResponse {
