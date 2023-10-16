@@ -1,34 +1,43 @@
+import { CarouselTileProps } from "./types";
 import { View, Text, ImageBackground, TouchableOpacity } from 'react-native';
 import React from 'react';
 
-interface CardsProps {
-  name: string;
-  image: any;
-  navigation: any;
-}
+const CarouselTile = ({
+    title,
+    country,
+    onCarouselTilePress,
+}: CarouselTileProps) => {
+    return (
+        <View>
+            {onCarouselTilePress ? (
+                <TouchableOpacity style={{ marginHorizontal: 10 }} onPress={() => onCarouselTilePress()}>
+                    <View style={{ flex: 1 }}>
+                        <ImageBackground
+                            source={require('../../assets/images/tile.png')}
+                            style={{ minHeight: 120, minWidth: 150 }}
+                            imageStyle={{ borderRadius: 16 }}
+                        >
+                            <View style={{ height: '100%', width: '100%', justifyContent: "center" }}>
+                                <Text
+                                    style={{
+                                        fontSize: 28,
+                                        textAlign: "center",
+                                        alignSelf: 'center',
+                                        alignItems: 'center',
+                                        color: 'black',
+                                    }}>
+                                    {title} {"\n"}
+                                    {country}
+                                </Text>
+                            </View>
+                        </ImageBackground>
+                    </View>
+                </TouchableOpacity>
+            ) : (
+                <View />
+            )}
+        </View>
+    );
+};
 
-export default function Cards({ name, image, navigation }: CardsProps): JSX.Element {
-  return (
-    <TouchableOpacity style={{ marginHorizontal: 10 }} onPress={() => navigation.navigate('Forecast', { name })}>
-      <ImageBackground
-        source={image}
-        style={{ minHeight: 120, minWidth: 150 }}
-        imageStyle={{ borderRadius: 16 }}
-      />
-      <View style={{ position: 'absolute', height: '100%', width: '100%' }}>
-        <Text
-          style={{
-            fontSize: 28,
-            width: '100%',
-            height: '100%',
-            textAlign: 'center',
-            textAlignVertical: 'center',
-            color: 'black',
-          }}
-        >
-          {name}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
-}
+export default CarouselTile;

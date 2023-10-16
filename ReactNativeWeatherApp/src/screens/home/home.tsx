@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { appLoaded } from '../../core/redux/actions/appActions';
 import { HomeStyle } from './styles';
-import Cards from '../../components/carouselTile/carouselTile';
+import CarouselTile from '../../components/carouselTile/carouselTile';
 
 interface City {
     name: string;
@@ -92,7 +92,7 @@ const Home = () => {
               horizontal
                 data={cities}
                 renderItem={({item}: {item: any}) => (
-                  <Cards name={item.name} image={item.image} navigation={{}} />
+                  <CarouselTile title={item.name} country="" onCarouselTilePress={() => {{}}} />
                 )}
               />
         </View>
