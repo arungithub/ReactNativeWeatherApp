@@ -9,6 +9,7 @@ import Utils from '../../utils/utils';
 import { ForecastStyle } from './styles';
 import Styles from '../../styles/styles';
 import ErrorInfo from '../../components/errorInfo/errorInfo';
+import { AppTestIds } from '../../utils/testUtils/testIds';
 
 const Forecast = () => {
   const getAppState = (state: RootState) => state.App;
@@ -21,7 +22,7 @@ const Forecast = () => {
   const { currentWeatherInformation, selectedLocationWeather, selectedLocationForecastInformation } =
     useAppSelector(getWeather);
 
-  const addCityToFavourites = (city: GetCityResponse) => {
+  const addCityToFavouritesList = (city: GetCityResponse) => {
     city.isFavourite
       ? dispatch(removeCityFromFavourites(city))
       : dispatch(addCityToFavourites(city));
@@ -36,7 +37,8 @@ const Forecast = () => {
     return (
       <View
         style={[Styles.flex1, ForecastStyle.forecastTileStyle, Styles.tileBackgroundColor]}
-        key={index}>
+        key={index}
+        testID={AppTestIds.ForecastScreenWeatherView}>
         <View>
           <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'black' }}>{dayName}</Text>
         </View>
@@ -66,6 +68,7 @@ const Forecast = () => {
         renderItem={({ item, index }) => renderForecastItem(item, index)}
         horizontal={true}
         style={Styles.paddingVertical16}
+        testID={AppTestIds.ForecastWeatherList}
       />
     );
   };
@@ -83,7 +86,7 @@ const Forecast = () => {
   );
 
   return (
-    <View style={Styles.flex1}>
+    <View style={Styles.flex1} testID={AppTestIds.ForecastView}>
       <View style={[Styles.flex1, Styles.appBackgroundThemeColor, Styles.padding_v_h_20]}>
         {selectedLocationForecastInformation ? (
           <View style={[Styles.flex1, Styles.appBackgroundThemeColor]}>
@@ -92,7 +95,8 @@ const Forecast = () => {
               <View>
                 <Pressable
                   style={[Styles.mediumIcon]}
-                  onPress={() => addCityToFavourites(selectedLocation as GetCityResponse)}>
+                  onPress={() => addCityToFavouritesList(selectedLocation as GetCityResponse)}
+                  testID={AppTestIds.FavouriteIconPressable}>
                   <Image
                     source={
                       selectedLocation?.isFavourite
@@ -113,6 +117,24 @@ const Forecast = () => {
                 {Utils.getRoundOfTemp(selectedLocationWeather?.main.temp as string)}
               </Text>
             </View>
+
+            <View style={[Styles.flex1, Styles.padding_t_b_10]}>
+              <Text style={{ color: 'white', fontSize: 22, paddingBottom: 5, paddingTop: 5, fontWeight: 'bold' }}>Weather Details:</Text>
+              <View style={{ paddingLeft: 10, paddingRight: 10 }}>
+                <Data value={Utils.getRoundOfTemp(selectedLocationWeather?.main.temp_min as string)} title="Min Temp" />
+                <Data value={Utils.getRoundOfTemp(selectedLocationWeather?.main.temp_max as string)} title="Max Temp" />
+                <Data value={Utils.getRoundOfTemp(selectedLocationWeather?.main.feels_like as string)} title="Feels like" />
+                <Data value={`${selectedLocationWeather?.main.humidity}%`} title="Humidity" />
+              </View>
+            </View>
+
+            <View style={[Styles.flex2, Styles.padding_t_b_10]}>
+              <Text style={{ color: 'white', fontSize: 25, fontWeight: 'bold' }}>
+                5 Day's Forecast:
+              </Text>
+              {weatherForecastList(selectedLocationForecastInformation)}
+            </View>
+
           </View>
         ) : (
           <ErrorInfo />
