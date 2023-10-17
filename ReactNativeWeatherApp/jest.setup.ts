@@ -1,4 +1,14 @@
+import { renderWithRedux } from './src/utils/testUtils/testUtils';
 import { jest } from '@jest/globals';
+import fetchMock from 'jest-fetch-mock';
+
+jest.mock('@react-native-async-storage/async-storage', () => {
+  return {
+    getItem: async (...args) => args,
+    setItem: async (...args) => args,
+    removeItem: async (...args) => args,
+  };
+});
 
 jest.mock('@react-navigation/native', () => {
   const actualNav = jest.requireActual('@react-navigation/native');
@@ -26,3 +36,6 @@ jest.mock('@react-native-community/geolocation', () => ({
 jest.mock('redux-persist/integration/react', () => ({
   PersistGate: (props: any) => props.children,
 }));
+
+global.renderWithRedux = renderWithRedux;
+global.fetchMock = fetchMock;

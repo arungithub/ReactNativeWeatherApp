@@ -1,18 +1,11 @@
 import { GeolocationResponse } from '@react-native-community/geolocation';
-import { AppDispatch, RootState } from './store';
 import {
   ForecastResponse,
   GetCityResponse,
   Units,
   WeatherResponse,
 } from '../../types/types';
-
-export interface ThunkType {
-  state: RootState;
-  dispatch: AppDispatch;
-  rejectValue: any;
-  extra?: { s: string; n: number };
-}
+import { AppDispatch, RootState } from './store';
 
 export interface AppStateType {
   appLoaded: boolean;
@@ -29,6 +22,13 @@ export interface WeatherStateType {
   selectedLocationForecastInformation: ForecastResponse | null;
   loading: boolean;
   searchCities: GetCityResponse[];
+}
+
+export interface ThunkType {
+  state: RootState;
+  dispatch: AppDispatch;
+  rejectValue: any;
+  extra?: { s: string; n: number };
 }
 
 export interface GetCurrentWeatherRequest {

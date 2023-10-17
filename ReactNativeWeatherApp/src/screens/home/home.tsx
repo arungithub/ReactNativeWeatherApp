@@ -18,6 +18,7 @@ import Utils from '../../utils/utils';
 import CarouselTile from '../../components/carouselTile/carouselTile';
 import { HomeStyle } from './styles';
 import Styles from '../../styles/styles';
+import { AppTestIds } from '../../utils/testUtils/testIds';
 
 const Home = () => {
   const navigation = useNavigation<any>();
@@ -93,7 +94,7 @@ const Home = () => {
     };
     
     return (
-      <View>
+      <View testID={AppTestIds.HomeView}>
         <Text style={{ color: 'white', fontSize: 22, fontWeight: 'bold', paddingBottom: 5 }}>
           Current location weather details
         </Text>
@@ -106,7 +107,7 @@ const Home = () => {
   }
 
   return (
-    <View style={Styles.flex1}>
+    <View style={Styles.flex1} testID={AppTestIds.HomeScreenWeatherView}>
       <View style={[Styles.flex1, Styles.appBackgroundThemeColor, Styles.padding_v_h_20]}>
         <View style={{ flex: 1, paddingBottom: 20, paddingTop: 5 }}>
           {currentWeatherInformation ? (
@@ -139,8 +140,9 @@ const Home = () => {
               placeholder="Search City"
               placeholderTextColor={'lightgray'}
               style={{ paddingHorizontal: 10, color: 'white', fontSize: 22 }}
+              testID={AppTestIds.SearchTextInput}
             />
-            <TouchableOpacity onPress={() => searchCity()}>
+            <TouchableOpacity onPress={() => searchCity()} testID={AppTestIds.SearchPressable}>
               <Image
                 source={require('../../assets/images/search.png')}
                 style={HomeStyle.searchIcon}
@@ -160,6 +162,7 @@ const Home = () => {
                 renderItem={({ item }) => (
                   <CarouselTile title={item.name} country={item.country} onCarouselTilePress={() => fetchAndNavigateToForecastScreen(item, false)} />
                 )}
+                testID={AppTestIds.SearchResultsList}
               />
             ) : (
               <View>
