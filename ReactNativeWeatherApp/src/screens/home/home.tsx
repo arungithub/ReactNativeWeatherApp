@@ -61,8 +61,6 @@ const Home = () => {
 
   //for forecast
   const fetchAndNavigateToForecastScreen = (city: GetCityResponse, isCurrentLocation: boolean) => {
-    dispatch(updateSelectedCity(isCurrentLocation ? null : city));
-
     dispatch(
       getSelectedLocationWeatherInfo({
         lat: city.lat,
@@ -93,7 +91,7 @@ const Home = () => {
       country: currentWeatherInformation?.sys.country as string,
       state: ""
     };
-    //{[Styles.container, ForecastStyle.cardStyle, Styles.forecastFlatListBackgroundColor]}
+    
     return (
       <View>
         <Text style={{ color: 'white', fontSize: 22, fontWeight: 'bold', paddingBottom: 5 }}>

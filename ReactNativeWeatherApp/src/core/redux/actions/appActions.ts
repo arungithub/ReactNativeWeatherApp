@@ -26,6 +26,9 @@ export const actionTypes = {
   UPDATE_CURRENT_GEO_LOCATION: 'APP/UPDATE_CURRENT_GEO_LOCATION',
   CLEAR_CURRENT_GEO_LOCATION: 'APP/CLEAR_CURRENT_GEO_LOCATION',
   GET_CITY_DETAILS: 'WEATHER/GET_CITY_DETAILS',
+  ADD_CITY_TO_FAVOURITES: 'WEATHER/ADD_CITY_TO_FAVOURITES',
+  REMOVE_CITY_FROM_FAVOURITES: 'WEATHER/REMOVE_CITY_FROM_FAVOURITES',
+  UPDATE_SELECTED_CITY: 'WEATHER/UPDATE_SELECTED_CITY'
 };
 
 export const appLoaded = () => {
@@ -46,6 +49,27 @@ export const updateCurrentLocation = (position: GeolocationResponse) => {
   return {
     type: actionTypes.UPDATE_CURRENT_GEO_LOCATION,
     payload: position,
+  };
+};
+
+export const updateSelectedCity = (city: GetCityResponse | null) => {
+  return {
+    type: actionTypes.UPDATE_SELECTED_CITY,
+    payload: city,
+  };
+};
+
+export const addCityToFavourites = (city: GetCityResponse) => {
+  return {
+    type: actionTypes.ADD_CITY_TO_FAVOURITES,
+    payload: city,
+  };
+};
+
+export const removeCityFromFavourites = (city: GetCityResponse) => {
+  return {
+    type: actionTypes.REMOVE_CITY_FROM_FAVOURITES,
+    payload: city,
   };
 };
 

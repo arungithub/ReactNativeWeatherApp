@@ -11,6 +11,7 @@ import { AppStateType, WeatherStateType } from '../types';
 import { createSlice } from '@reduxjs/toolkit';
 import {
   ForecastResponse,
+  GetCityResponse,
   WeatherResponse,
 } from '../../../types/types';
 
@@ -116,6 +117,32 @@ const AppReducer = (
     case actionTypes.CLEAR_CURRENT_GEO_LOCATION:
       return { ...state, currentGeoLocation: action.payload };
 
+    case actionTypes.UPDATE_SELECTED_CITY:
+      return { ...state, selectedLocation: action.payload };
+  
+    case actionTypes.ADD_CITY_TO_FAVOURITES:
+      const city = { ...action.payload } as GetCityResponse;
+      city.isFavourite = true;
+      const favCities = [...state.favouriteLocations];
+      favCities.push(city);
+  
+      return {
+        ...state,
+        favouriteLocations: favCities,
+        selectedLocation: city,
+      };
+  
+    case actionTypes.REMOVE_CITY_FROM_FAVOURITES:
+      const removeCity = { ...action.payload } as GetCityResponse;
+      removeCity.isFavourite = false;
+      const cities = [...state.favouriteLocations];
+      return {
+        ...state,
+        favouriteLocations: cities.filter(
+          value => value.name !== removeCity.name,
+        ),
+        selectedLocation: removeCity,
+      };
     default:
       return state;
   }

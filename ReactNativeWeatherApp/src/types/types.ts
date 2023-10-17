@@ -47,7 +47,7 @@ export interface GetCityResponse {
   lon: number;
   country: string;
   state: string;
-  isWatchlist?: boolean;
+  isFavourite?: boolean;
 }
 
 export type Units = 'imperial' | 'metric' | 'standard';
