@@ -10,6 +10,7 @@ import {
 } from '../../core/redux/actions/appActions';
 import {
   mockCityWeatherData,
+  mockDailyForecastWeatherData,
   mockLocationWeatherData,
   mockWeatherResponse,
 } from '../../utils/testUtils/testMockData';
@@ -41,5 +42,31 @@ describe('Forecast', () => {
       await store.dispatch(getSelectedLocationWeatherInfo(arg));
     });
     expect(getByTestId(AppTestIds.ForecastView)).toBeOnTheScreen();
+  });
+
+  //Selected locations weather forecast information //bottom flatlist
+  it('Selected Location Weather forecast information', async () => {
+    fetchMock.mockResponse(JSON.stringify(mockDailyForecastWeatherData));
+    const { getAllByTestId, update } = renderWithRedux(<Forecast />);
+    await waitFor(async () => {
+      await store.dispatch(updateSelectedCity(mockCityWeatherData));
+      await store.dispatch(getSelectedLocationWeatherForecast(arg));
+      await update(<Forecast />);
+    });
+    expect(getAllByTestId(AppTestIds.ForecastWeatherList).length).toBe(1);
+    expect(getAllByTestId(AppTestIds.ForecastScreenWeatherView).length).toBe(
+      1 * arg.cnt,
+    );
+  });
+
+  //Add to favourites test
+  it('Updating Favourites', async () => {
+    const watchlistSpy = jest.spyOn(store, 'dispatch');
+    const { getByTestId } = renderWithRedux(<Forecast />);
+    const watchlistPressable = getByTestId(AppTestIds.FavouriteIconPressable);
+    waitFor(() => {
+      fireEvent(watchlistPressable, 'press');
+    });
+    expect(watchlistSpy).toHaveBeenCalled();
   });
 });
