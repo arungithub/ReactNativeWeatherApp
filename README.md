@@ -1,4 +1,4 @@
-# WeatherApp
+# ReactNativeWeatherApp
 Weather App developed in React Native, mainly targeting iOS platform. 
 
 Minimum deployment target: iOS 13 and above.
