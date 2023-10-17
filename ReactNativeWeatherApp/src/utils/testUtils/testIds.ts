@@ -6,4 +6,5 @@ export const AppTestIds = {
     SearchTextInput: 'SearchTextInput', 
     SearchedCityTileTapped: 'SearchedCityTileTapped',
     SearchResultsList: 'SearchResultsList',
+    FavouritesList: 'FavouritesList'
   };  

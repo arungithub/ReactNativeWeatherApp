@@ -13,6 +13,7 @@ import {
 } from '../../utils/testUtils/testMockData';
 import {
   actionTypes,
+  addCityToFavourites,
   getCity,
   getCurrentWeatherInfo,
   updateCurrentLocation,
@@ -61,6 +62,34 @@ describe('Home', () => {
     await store.dispatch(getCity({ q: mockCityWeatherData.name }));
     waitFor(() => {
       expect(getAllByTestId(AppTestIds.SearchResultsList).length).toBe(1);
+    });
+  });
+
+  it('Select city', async () => {
+    const updateSelectCitySpy = jest.spyOn(store, 'dispatch');
+    const { getByTestId } = renderWithRedux(<Home />);
+    const selectCityPressable = getByTestId(AppTestIds.SearchedCityTileTapped);
+    waitFor(async () => {
+      await fireEvent.press(selectCityPressable, mockCityWeatherData);
+    });
+    waitFor(() => {
+      expect(updateSelectCitySpy).toHaveBeenCalledWith({
+        type: actionTypes.UPDATE_SELECTED_CITY,
+        payload: mockCityWeatherData,
+      });
+      expect(updateSelectCitySpy).toHaveBeenCalledWith({
+        type: 'WEATHER/clearSearchCity',
+      });
+    });
+  });
+
+  it('Favourite location list', async () => {
+    store.dispatch(addCityToFavourites(mockCityWeatherData));
+    const { getAllByTestId } = renderWithRedux(<Home />);
+    waitFor(() => {
+      expect(
+        getAllByTestId(AppTestIds.FavouritesList).length,
+      ).toBeGreaterThanOrEqual(1);
     });
   });
 });
