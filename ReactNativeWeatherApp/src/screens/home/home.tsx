@@ -4,7 +4,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  FlatList,
+  FlatList
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -13,7 +13,14 @@ import { useNavigation } from '@react-navigation/native';
 import { GetCityResponse, WeatherResponse } from '../../types/types';
 import { AppConstants } from '../../constants/constants';
 import { weatherActions } from '../../core/redux/reducers/appReducer';
-import { appLoaded, getCity, getCurrentWeatherInfo, getSelectedLocationWeatherForecast, getSelectedLocationWeatherInfo } from '../../core/redux/actions/appActions';
+import { 
+  appLoaded, 
+  getCity,
+  getCurrentWeatherInfo, 
+  getSelectedLocationWeatherForecast, 
+  getSelectedLocationWeatherInfo,
+  updateSelectedCity 
+} from '../../core/redux/actions/appActions';
 import Utils from '../../utils/utils';
 import CarouselTile from '../../components/carouselTile/carouselTile';
 import { HomeStyle } from './styles';
@@ -62,6 +69,8 @@ const Home = () => {
 
   //for forecast
   const fetchAndNavigateToForecastScreen = (city: GetCityResponse, isCurrentLocation: boolean) => {
+    dispatch(updateSelectedCity(isCurrentLocation ? null : city));
+
     dispatch(
       getSelectedLocationWeatherInfo({
         lat: city.lat,
